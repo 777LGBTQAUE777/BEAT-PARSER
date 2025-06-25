@@ -1,0 +1,1178 @@
+/* Импорт шрифта Montserrat */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;900&display=swap');
+
+/* Сброс стилей и базовые настройки */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: #000;
+  color: #fff;
+  font-family: 'Montserrat', Arial, sans-serif;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+/* Основной контейнер приложения */
+.app-container {
+  min-height: 100vh;
+  background: #000;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 40px 20px;
+}
+
+.background-image {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-size: cover;
+  background-position: center;
+  z-index: 0;
+  opacity: 0.65;
+  pointer-events: none;
+}
+
+
+/* Маскот сайта */
+.cat-mascot {
+  position: fixed;
+  top: 120px; /* 120px от верхнего края */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 250px;
+  height: auto;
+  z-index: 1; /* ниже модалок */
+  opacity: 1;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+
+/* Скрывать кота, если открыта модалка */
+body.modal-open .cat-mascot {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Обёртка приложения */
+.app-wrapper {
+  width: 100%;
+  max-width: 1200px;
+  z-index: 10;
+  margin-top: 320px; /* отступ вниз, чтобы UI начинался после кота (250px высота + 70px запас) */
+}
+
+/* Шапка */
+.app-header {
+  position: fixed;
+  top: 24px;
+  left: 32px;
+  width: auto;
+  margin-bottom: 0;
+  z-index: 100;
+  background: none;
+  box-shadow: none;
+}
+
+.app-title {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 900;
+  font-size: 20px;
+  color: #fff;
+  text-align: left;
+  letter-spacing: 2px;
+  background: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* Уведомления потока */
+.stream-notification {
+  background: rgba(255, 34, 34, 0.1);
+  border: 1px solid #ff2222;
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 800px;
+}
+
+.notification-icon {
+  font-size: 16px;
+}
+
+.notification-text {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 300;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+/* ГЛАВНЫЙ LAYOUT - ТРИ КОЛОНКИ */
+.main-layout {
+  display: grid;
+  grid-template-columns: 1fr 200px 280px;
+  gap: 40px;
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+  align-items: start;
+}
+
+/* ЛЕВАЯ КОЛОНКА */
+.left-column {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+/* Блок поиска */
+.search-block {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.search-left {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Форма поиска */
+.search-form {
+  width: 100%;
+}
+
+/* Поле ввода */
+.search-input {
+  width: 100%;
+  height: 44px;
+  background: transparent;
+  border: 2px solid #ff2222;
+  border-radius: 12px;
+  color: rgba(255, 255, 255, 0.85);
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 300;
+  font-size: 14px;
+  padding: 0 16px;
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+
+.search-input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.search-input:focus {
+  border-color: #ff4444;
+  box-shadow: 0 0 0 2px #ff2222;
+  background: rgba(255,34,34,0.04);
+}
+
+/* Кнопки фильтров */
+.filter-buttons {
+  display: flex;
+  gap: 12px;
+}
+
+.control-button {
+  height: 44px;
+  background: transparent;
+  border: 2px solid #ff2222;
+  border-radius: 12px;
+  color: rgba(255, 255, 255, 0.85);
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 300;
+  font-size: 14px;
+  padding: 0 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  flex: 1;
+}
+
+.control-button:hover {
+  border-color: #ff4444;
+  background: rgba(255, 34, 34, 0.1);
+  transform: scale(1.04);
+  box-shadow: 0 2px 16px 0 rgba(255,34,34,0.10);
+}
+
+.control-button:active {
+  transform: scale(0.97);
+  box-shadow: 0 1px 6px 0 rgba(255,34,34,0.13);
+}
+
+.stream-button-wrapper {
+  flex: 1;
+}
+
+.stream-countdown {
+  font-size: 12px;
+  opacity: 0.8;
+}
+
+/* Блок "сейчас играет" */
+.now-playing {
+  border: 2px solid #ff2222;
+  border-radius: 46px;
+  padding: 16px 24px;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.now-label {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 900;
+  font-size: 16px;
+  color: #fff;
+  letter-spacing: 1px;
+}
+
+.now-title {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 300;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+/* Контролы плеера */
+.player-controls {
+  display: flex;
+  gap: 32px;
+  align-items: center;
+  border: 2px solid #ff2222;
+  border-radius: 46px;
+  padding: 12px 0;
+  justify-content: center;
+  background: transparent;
+}
+
+.control-btn {
+  background: transparent;
+  border: none;
+  color: #ff2222;
+  font-size: 24px;
+  cursor: pointer;
+  transition: color 0.3s ease;
+  padding: 8px;
+}
+
+/* --- IMPACT EFFECTS FOR PLAYER CONTROLS SVG ICONS --- */
+.player-controls .control-btn svg {
+  transition: transform 0.18s cubic-bezier(0.4,0,0.2,1),
+              filter 0.18s cubic-bezier(0.4,0,0.2,1),
+              fill 0.3s cubic-bezier(0.4,0,0.2,1);
+  filter: drop-shadow(0 1px 2px rgba(255,34,34,0.12));
+  will-change: transform, filter, fill;
+}
+
+.player-controls .control-btn:hover svg {
+  transform: scale(1.15);
+  filter: drop-shadow(0 2px 8px rgba(255,34,34,0.25));
+}
+
+.player-controls .control-btn:active svg {
+  transform: scale(0.95);
+  filter: drop-shadow(0 1px 2px rgba(255,34,34,0.18));
+}
+
+/* --- SVG-иконки управления плеером --- */
+.control-btn svg {
+  transition: transform 0.18s cubic-bezier(.4,1.6,.6,1),
+    filter 0.18s cubic-bezier(.4,1.6,.6,1),
+    box-shadow 0.18s cubic-bezier(.4,1.6,.6,1),
+    fill 0.25s cubic-bezier(.4,1.6,.6,1);
+  filter: drop-shadow(0 0 0px #ff2222);
+}
+
+.control-btn:hover svg,
+.control-btn:focus-visible svg {
+  transform: scale(1.18);
+  filter: drop-shadow(0 0 8px #ff2222);
+}
+
+.control-btn:active svg {
+  transform: scale(0.95);
+  filter: drop-shadow(0 0 12px #fff);
+}
+
+/* --- FAVORITE (HEART) BUTTON ANIMATION --- */
+.player-controls .favorite-btn svg {
+  transition: fill 0.35s cubic-bezier(0.4,0,0.2,1),
+              transform 0.18s cubic-bezier(0.4,0,0.2,1);
+  fill: none;
+  stroke: #ff2222;
+  stroke-width: 2.2;
+}
+
+.player-controls .favorite-btn.favorited svg {
+  fill: #ff2222;
+  animation: heart-pop 0.32s cubic-bezier(0.4,0,0.2,1);
+  stroke: #ff2222;
+}
+
+@keyframes heart-pop {
+  0% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 0 #ff2222);
+  }
+  40% {
+    transform: scale(1.25);
+    filter: drop-shadow(0 0 8px #ff2222);
+  }
+  60% {
+    transform: scale(0.92);
+    filter: drop-shadow(0 0 2px #ff2222);
+  }
+  100% {
+    transform: scale(1);
+    filter: none;
+  }
+}
+
+.player-controls .favorite-btn:hover svg {
+  filter: drop-shadow(0 2px 8px rgba(255,34,34,0.25));
+  transform: scale(1.15);
+}
+
+.player-controls .favorite-btn:active svg {
+  transform: scale(0.95);
+}
+
+/* Контейнер плеера */
+.player-container {
+  border: 2px solid #ff2222;
+  border-radius: 46px;
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  padding: 16px;
+}
+
+.player-wrapper {
+  width: 100%;
+  height: 100%;
+}
+
+#yt-player {
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+}
+
+/* СРЕДНЯЯ КОЛОНКА - кнопка "поиск трека" */
+.middle-column {
+  display: flex;
+  align-items: flex-start;
+}
+
+.search-track-button {
+  width: 200px;
+  height: 104px; /* Высота поля ввода + кнопок фильтров + отступ */
+  background: #333;
+  border: none;
+  border-radius: 0;
+  color: #fff;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 900;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  letter-spacing: 1px;
+}
+
+.search-track-button:hover {
+  background: #444;
+}
+
+.search-track-button:disabled {
+  background: #222;
+  color: #666;
+  cursor: not-allowed;
+}
+
+/* ПРАВАЯ КОЛОНКА - сайдбар */
+.right-column {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 280px;
+}
+
+/* Блок избранного */
+.favorites-block {
+  background: rgba(40, 40, 40, 0.8);
+  border-radius: 0;
+  padding: 20px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.favorites-block:hover {
+  background: rgba(50, 50, 50, 0.8);
+}
+
+.favorites-title {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 900;
+  font-size: 16px;
+  color: #fff;
+  margin-bottom: 16px;
+  letter-spacing: 1px;
+}
+
+.favorites-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.favorite-item {
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.favorite-item-title {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 300;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.85);
+  margin-bottom: 4px;
+  line-height: 1.3;
+}
+
+.favorite-item-channel {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 300;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.favorite-item:hover .favorite-item-title {
+  color: #ff2222;
+}
+
+.favorites-empty {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 300;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.favorites-more {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 300;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+  margin-top: 8px;
+}
+
+/* Кнопка статистики */
+.stats-button {
+  width: 100%;
+  height: 54px;
+  background: rgba(40, 40, 40, 0.8);
+  border: none;
+  border-radius: 0;
+  color: #fff;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 900;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  letter-spacing: 1px;
+}
+
+.stats-button:hover {
+  background: #ff2222;
+  transform: scale(1.04);
+  box-shadow: 0 2px 16px 0 rgba(255,34,34,0.10);
+}
+
+.stats-button:active {
+  transform: scale(0.97);
+  box-shadow: 0 1px 6px 0 rgba(255,34,34,0.13);
+}
+
+/* Модальные окна */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: modal-fade-in 0.22s cubic-bezier(.4,1.6,.6,1);
+}
+
+@keyframes modal-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modal-content {
+  background: #111;
+  border: 2px solid #ff2222;
+  border-radius: 12px !important;
+  padding: 24px;
+  max-width: 500px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  animation: modal-pop-in 0.28s cubic-bezier(.4,1.6,.6,1);
+  box-shadow: 0 0 32px 0 rgba(255,34,34,0.18), 0 2px 24px 0 rgba(0,0,0,0.25);
+  transition: box-shadow 0.22s cubic-bezier(.4,1.6,.6,1), border 0.22s cubic-bezier(.4,1.6,.6,1);
+}
+
+@keyframes modal-pop-in {
+  0% { opacity: 0; transform: scale(0.92); }
+  60% { opacity: 1; transform: scale(1.04); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+.modal-content:focus-within {
+  box-shadow: 0 0 48px 0 #ff2222, 0 2px 24px 0 rgba(0,0,0,0.25);
+  border-color: #fff;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.modal-title {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 900;
+  font-size: 16px;
+  color: #fff;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.18s cubic-bezier(.4,1.6,.6,1), transform 0.16s cubic-bezier(.4,1.6,.6,1);
+}
+
+.modal-close:hover {
+  color: #ff2222;
+  transform: scale(1.18) rotate(8deg);
+}
+
+/* Опции в модальных окнах */
+.stream-options,
+.duration-options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.stream-option,
+.duration-option {
+  background: transparent;
+  border: 2px solid #333;
+  border-radius: 5px;
+  padding: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: left;
+}
+
+.stream-option:hover,
+.duration-option:hover {
+  border-color: #ff2222;
+  background: rgba(255, 34, 34, 0.1);
+}
+
+.stream-option.selected,
+.duration-option.selected {
+  border-color: #ff2222;
+  background: rgba(255, 34, 34, 0.2);
+}
+
+.stream-option-title,
+.duration-option-title {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 900;
+  font-size: 16px;
+  color: #fff;
+  margin-bottom: 4px;
+}
+
+.stream-option-description,
+.duration-option-description {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 300;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+/* Модалка избранного */
+.favorites-modal {
+  max-width: 600px;
+}
+
+.favorites-modal-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.favorites-modal-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  background: rgba(40, 40, 40, 0.5);
+  border-radius: 8px;
+  transition: background 0.18s cubic-bezier(.4,1.6,.6,1),
+              transform 0.16s cubic-bezier(.4,1.6,.6,1);
+}
+
+.favorites-modal-item:hover {
+  background: rgba(255,34,34,0.07);
+  transform: scale(1.02);
+}
+
+.favorites-modal-info {
+  flex: 1;
+  cursor: pointer;
+}
+
+.favorites-modal-title {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 300;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.85);
+  margin-bottom: 4px;
+}
+
+.favorites-modal-channel {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 300;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.favorites-modal-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.favorites-action-button {
+  background: #333;
+  border: none;
+  border-radius: 6px;
+  color: #fff;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 300;
+  font-size: 12px;
+  padding: 6px 12px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.favorites-action-button:hover {
+  background: #ff2222;
+}
+
+/* Модалка статистики */
+.stats-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.quota-info {
+  margin-bottom: 20px;
+}
+
+.quota-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.quota-label,
+.quota-value {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 300;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.quota-bar {
+  width: 100%;
+  height: 8px;
+  background: #333;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.quota-progress {
+  height: 100%;
+  transition: width 0.3s ease;
+}
+
+.quota-progress.low {
+  background: #4CAF50;
+}
+
+.quota-progress.medium {
+  background: #FF9800;
+}
+
+.quota-progress.high {
+  background: #F44336;
+}
+
+.stats-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid #333;
+}
+
+.stats-label {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 300;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.stats-value {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 300;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.stats-value.success {
+  color: #4CAF50;
+}
+
+.stats-value.muted {
+  color: #666;
+}
+
+.stats-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.stats-action-button {
+  flex: 1;
+  background: #333;
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 300;
+  font-size: 14px;
+  padding: 12px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.stats-action-button:hover {
+  background: #ff2222;
+}
+
+/* --- DIFFUSE ANIMATED BACKGROUND --- */
+.diffuse-bg {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -1;
+  pointer-events: none;
+  overflow: hidden;
+  background: #000;
+}
+
+.diffuse-bg::before,
+.diffuse-bg::after {
+  content: '';
+  position: absolute;
+  width: 140vw;
+  height: 140vh;
+  left: -20vw;
+  top: -20vh;
+  opacity: 0.5;
+  filter: blur(80px) saturate(1.2);
+  z-index: -1;
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+
+.diffuse-bg::before {
+  background: radial-gradient(circle at 30% 40%, #ff2222cc 0%, #ff7a7a44 40%, transparent 80%),
+              radial-gradient(circle at 70% 60%, #22c1c3cc 0%, #7afcff44 40%, transparent 80%);
+  animation: diffuse-move 28s linear infinite alternate;
+}
+
+.diffuse-bg::after {
+  background: radial-gradient(circle at 60% 30%, #ffef22cc 0%, #fff97a44 40%, transparent 80%),
+              radial-gradient(circle at 40% 70%, #c322ffcc 0%, #e97aff44 40%, transparent 80%);
+  opacity: 0.38;
+  filter: blur(120px) saturate(1.2);
+  animation: diffuse-move2 36s linear infinite alternate;
+}
+
+@keyframes diffuse-move {
+  0%   { transform: scale(1) translate(0, 0);}
+  50%  { transform: scale(1.08) translate(-4vw, 2vh);}
+  100% { transform: scale(1.15) translate(6vw, -3vh);}
+}
+@keyframes diffuse-move2 {
+  0%   { transform: scale(1.05) translate(0, 0);}
+  50%  { transform: scale(1.13) translate(5vw, -4vh);}
+  100% { transform: scale(1.01) translate(-7vw, 3vh);}
+}
+
+/* Кнопка "поиск трека", "избранное", "статистика" — без закруглений */
+.search-track-button,
+.favorites-block,
+.stats-button {
+  border-radius: 0 !important;
+}
+
+/* Блок now playing, player controls, медиапроигрыватель — radius 46 */
+.now-playing,
+.player-controls,
+.player-container {
+  border-radius: 46px !important;
+}
+
+/* Остальные блоки — radius 5 */
+.favorites-list,
+.favorites-modal,
+.favorites-modal-list,
+.favorites-modal-item,
+.modal-content,
+.duration-options,
+.stream-options,
+.duration-option,
+.stream-option {
+  border-radius: 5px !important;
+}
+
+/* Адаптивность */
+@media (max-width: 1024px) {
+  .main-layout {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  
+  .middle-column {
+    order: -1;
+  }
+  
+  .search-track-button {
+    width: 100%;
+    height: 44px;
+  }
+  
+  .right-column {
+    width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .filter-buttons {
+    flex-direction: column;
+  }
+  
+  .player-controls {
+    gap: 20px;
+  }
+  
+  .control-btn {
+    font-size: 20px;
+  }
+  
+  .app-container {
+    padding: 20px 10px;
+  }
+}
+
+/* --- IMPACT EFFECTS ДЛЯ КНОПОК И ИНТЕРАКТИВНЫХ БЛОКОВ --- */
+.control-button,
+.stats-button,
+.search-track-button,
+.favorites-block,
+.favorites-action-button {
+  transition: transform 0.16s cubic-bezier(.4,1.6,.6,1),
+              box-shadow 0.18s cubic-bezier(.4,1.6,.6,1),
+              background 0.22s cubic-bezier(.4,1.6,.6,1),
+              color 0.18s cubic-bezier(.4,1.6,.6,1);
+}
+
+.control-button:hover,
+.stats-button:hover,
+.search-track-button:hover,
+.favorites-block:hover,
+.favorites-action-button:hover {
+  transform: scale(1.04);
+  box-shadow: 0 2px 16px 0 rgba(255,34,34,0.10);
+  background: rgba(255,34,34,0.08);
+  color: #fff;
+}
+
+.control-button:active,
+.stats-button:active,
+.search-track-button:active,
+.favorites-block:active,
+.favorites-action-button:active {
+  transform: scale(0.97);
+  box-shadow: 0 1px 6px 0 rgba(255,34,34,0.13);
+}
+
+/* --- МЕНЬШЕ ЭФФЕКТОВ ДЛЯ ОСНОВНЫХ КНОПОК --- */
+.stats-button,
+.search-track-button,
+.favorites-block,
+.favorites-action-button {
+  transition: background 0.22s cubic-bezier(.4,1.6,.6,1),
+              color 0.18s cubic-bezier(.4,1.6,.6,1);
+}
+
+.stats-button:hover,
+.search-track-button:hover,
+.favorites-block:hover,
+.favorites-action-button:hover {
+  background: rgba(255,34,34,0.08);
+  color: #fff;
+  /* Без transform и box-shadow */
+}
+
+.stats-button:active,
+.search-track-button:active,
+.favorites-block:active,
+.favorites-action-button:active {
+  background: rgba(255,34,34,0.13);
+  /* Без transform и box-shadow */
+}
+
+/* Для избранного (сердце) — эффекты scale оставить только для самой SVG, а не для кнопки-обёртки */
+
+/* --- МОДАЛЬНЫЕ ОКНА: АНИМАЦИЯ И GLOW --- */
+.modal-overlay {
+  animation: modal-fade-in 0.22s cubic-bezier(.4,1.6,.6,1);
+}
+
+.modal-content {
+  animation: modal-pop-in 0.28s cubic-bezier(.4,1.6,.6,1);
+  box-shadow: 0 0 32px 0 rgba(255,34,34,0.18), 0 2px 24px 0 rgba(0,0,0,0.25);
+  border: 2px solid #ff2222;
+  border-radius: 12px !important;
+  transition: box-shadow 0.22s cubic-bezier(.4,1.6,.6,1), border 0.22s cubic-bezier(.4,1.6,.6,1);
+}
+
+.modal-content:focus-within {
+  box-shadow: 0 0 48px 0 #ff2222, 0 2px 24px 0 rgba(0,0,0,0.25);
+  border-color: #fff;
+}
+
+@keyframes modal-pop-in {
+  0% { opacity: 0; transform: scale(0.92); }
+  60% { opacity: 1; transform: scale(1.04); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+/* --- Спокойный hover-эффект для избранное, статистика, поиск --- */
+.stats-button,
+.search-track-button,
+.favorites-block {
+  transition: opacity 0.18s cubic-bezier(.4,1.6,.6,1) !important;
+  background: rgba(40, 40, 40, 0.8);
+  color: #fff;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+.stats-button:hover,
+.search-track-button:hover,
+.favorites-block:hover,
+.stats-button:active,
+.search-track-button:active,
+.favorites-block:active {
+  opacity: 0.85;
+  background: rgba(40, 40, 40, 0.8);
+  color: #fff;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+/* --- Деликатное увеличение при hover для избранное, статистика, поиск --- */
+.stats-button,
+.search-track-button,
+.favorites-block {
+  transition: opacity 0.18s cubic-bezier(.4,1.6,.6,1),
+              transform 0.18s cubic-bezier(.4,1.6,.6,1) !important;
+  background: rgba(40, 40, 40, 0.8);
+  color: #fff;
+  box-shadow: none !important;
+}
+
+.stats-button:hover,
+.search-track-button:hover,
+.favorites-block:hover,
+.stats-button:active,
+.search-track-button:active,
+.favorites-block:active {
+  opacity: 0.88;
+  transform: scale(1.03);
+  background: rgba(40, 40, 40, 0.8);
+  color: #fff;
+  box-shadow: none !important;
+}
+
+/* --- TOAST ERROR NOTIFICATION --- */
+.toast-error {
+  position: fixed;
+  top: 32px;
+  right: 32px;
+  z-index: 2000;
+  min-width: 260px;
+  max-width: 340px;
+  background: rgba(255, 34, 34, 0.97);
+  color: #fff;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 900;
+  font-size: 15px;
+  border-radius: 12px;
+  box-shadow: 0 4px 32px 0 rgba(255,34,34,0.18), 0 2px 24px 0 rgba(0,0,0,0.18);
+  padding: 18px 28px 18px 18px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  opacity: 0.98;
+  animation: toast-fade-in 0.35s cubic-bezier(.4,1.6,.6,1);
+  transition: opacity 0.22s cubic-bezier(.4,1.6,.6,1),
+              transform 0.22s cubic-bezier(.4,1.6,.6,1);
+}
+.toast-error:hover {
+  opacity: 1;
+  transform: scale(1.03);
+  box-shadow: 0 8px 32px 0 rgba(255,34,34,0.22), 0 2px 24px 0 rgba(0,0,0,0.22);
+}
+@keyframes toast-fade-in {
+  0% { opacity: 0; transform: translateY(-30px) scale(0.95); }
+  60% { opacity: 1; transform: translateY(6px) scale(1.04); }
+  100% { opacity: 0.98; transform: translateY(0) scale(1); }
+}
+
+@media (max-width: 600px) {
+  .toast-error {
+    top: 16px;
+    right: 8px;
+    left: 8px;
+    min-width: unset;
+    max-width: 98vw;
+    font-size: 14px;
+    padding: 14px 12px 14px 12px;
+  }
+}
+
+/* --- АНИМАЦИЯ УВЕЛИЧЕНИЯ ДЛЯ КНОПОК ИЗБРАННОЕ, ПОИСК ТРЕКА, СТАТИСТИКА --- */
+.favorites-block,
+.search-track-button,
+.stats-button {
+  transition: transform 0.18s cubic-bezier(.4,1.6,.6,1),
+              opacity 0.18s cubic-bezier(.4,1.6,.6,1),
+              background 0.22s cubic-bezier(.4,1.6,.6,1),
+              color 0.18s cubic-bezier(.4,1.6,.6,1);
+}
+.favorites-block:hover,
+.search-track-button:hover,
+.stats-button:hover {
+  transform: scale(1.045);
+  opacity: 0.96;
+  background: rgba(255,34,34,0.10);
+}
+.favorites-block:active,
+.search-track-button:active,
+.stats-button:active {
+  transform: scale(0.97);
+  opacity: 0.92;
+}
+
+/* Вертикальный слайдер для placeholder'ов */
+.animated-placeholder-slider {
+  font-family: 'Montserrat', Arial, sans-serif;
+  font-weight: 300;
+  font-size: 1em;
+  color: #fff;
+  opacity: 0.7;
+  display: flex;
+  align-items: center;
+  height: 24px;
+  line-height: 24px;
+  letter-spacing: 0.5px;
+  user-select: none;
+}
+
+.slider-words-wrapper {
+  display: inline-block;
+  height: 24px;
+  overflow: hidden;
+  vertical-align: middle;
+  position: relative;
+  min-width: 90px;
+}
+
+.slider-words-inner {
+  display: block;
+  transition: transform 0.35s cubic-bezier(.4,1.6,.6,1);
+}
+
+.slider-word {
+  display: block;
+  color: #ff2222;
+  font-family: 'Montserrat', Arial, sans-serif;
+  font-weight: 300;
+  font-size: 1em;
+  height: 24px;
+  line-height: 24px;
+  letter-spacing: 0.5px;
+  font-variant: none;
+  user-select: none;
+}
