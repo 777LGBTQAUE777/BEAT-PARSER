@@ -1,0 +1,17 @@
+{
+  "files": {
+    "main.css": "/BEAT-PARSER/static/css/main.ce134d7b.css",
+    "main.js": "/BEAT-PARSER/static/js/main.a334748e.js",
+    "static/js/453.e868b6a7.chunk.js": "/BEAT-PARSER/static/js/453.e868b6a7.chunk.js",
+    "static/media/cat.png": "/BEAT-PARSER/static/media/cat.e1735ef2f8858070efa0.png",
+    "static/media/background.png": "/BEAT-PARSER/static/media/background.51c20bfc607fcfae5fe2.png",
+    "index.html": "/BEAT-PARSER/index.html",
+    "main.ce134d7b.css.map": "/BEAT-PARSER/static/css/main.ce134d7b.css.map",
+    "main.a334748e.js.map": "/BEAT-PARSER/static/js/main.a334748e.js.map",
+    "453.e868b6a7.chunk.js.map": "/BEAT-PARSER/static/js/453.e868b6a7.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.ce134d7b.css",
+    "static/js/main.a334748e.js"
+  ]
+}
