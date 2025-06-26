@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 # 🎛️ BeatParser
 
 > **PUBLIC API KEY (для тестов)**  
