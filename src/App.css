@@ -1,3 +1,189 @@
+/* --- SPLASH MASTER --- */
+.splash-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 3000;
+  background: rgba(0,0,0,0.82);
+  backdrop-filter: blur(14px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.28s cubic-bezier(.4,1.6,.6,1);
+  pointer-events: all;
+}
+
+/* splash-scene: шире и ниже, рамка и обводки менее насыщенные */
+.splash-scene {
+  min-width: 340px;
+  max-width: 540px;
+  width: 100%;
+  background: rgba(24, 24, 28, 0.92);
+  border: 2px solid #ff444466;
+  border-radius: 12px;
+  box-shadow: 0 0 32px 0 #ff222233, 0 2px 24px 0 rgba(0,0,0,0.18);
+  padding: 28px 48px 22px 48px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  animation: splash-pop-in 0.28s cubic-bezier(.4,1.6,.6,1);
+  position: relative;
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  transition: opacity 0.22s cubic-bezier(.4,1.6,.6,1), transform 0.22s cubic-bezier(.4,1.6,.6,1);
+}
+.splash-enter {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+.splash-leave {
+  opacity: 0;
+  transform: translateY(-16px) scale(0.98);
+  transition: opacity 0.22s cubic-bezier(.4,1.6,.6,1), transform 0.22s cubic-bezier(.4,1.6,.6,1);
+}
+@keyframes splash-pop-in {
+  0% { opacity: 0; transform: scale(0.92); }
+  60% { opacity: 1; transform: scale(1.04); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+/* Индикаторы шагов */
+.splash-steps {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 32px;
+  margin-top: -12px;
+}
+/* Индикаторы шагов: менее насыщенные */
+.splash-step-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #555;
+  opacity: 0.7;
+  transition: background 0.18s cubic-bezier(.4,1.6,.6,1), opacity 0.18s cubic-bezier(.4,1.6,.6,1);
+}
+.splash-step-dot.active {
+  background: #ff4444cc;
+  opacity: 1;
+}
+
+/* splash-title: только первые предложения жирные, остальное обычное */
+.splash-title {
+  font-family: 'Montserrat Black', 'Montserrat', Arial, sans-serif;
+  font-weight: 900;
+  font-size: 22px;
+  color: #fff;
+  text-align: center;
+  margin-bottom: 1.2em;
+  line-height: 1.2;
+  letter-spacing: 0.01em;
+  transition: opacity 0.22s cubic-bezier(.4,1.6,.6,1), transform 0.22s cubic-bezier(.4,1.6,.6,1);
+  max-width: 60ch;
+}
+.splash-title .splash-title-secondary {
+  font-family: 'Montserrat', Arial, sans-serif;
+  font-weight: 400;
+  color: #fff;
+}
+/* splash-subtitle: убрать жирность */
+.splash-subtitle {
+  font-family: 'Montserrat', Arial, sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  color: #e0e0e0;
+  margin-bottom: 2.2em;
+  line-height: 1.5;
+  text-align: center;
+  max-width: 60ch;
+  transition: opacity 0.22s cubic-bezier(.4,1.6,.6,1), transform 0.22s cubic-bezier(.4,1.6,.6,1);
+}
+/* splash-hint: сделать тусклее */
+.splash-hint {
+  margin-top: 1.2em;
+  font-size: 14px;
+  color: #888;
+  font-family: 'Montserrat', Arial, sans-serif;
+  font-weight: 300;
+  opacity: 0.55;
+  line-height: 1.5;
+  text-align: center;
+}
+/* splash-input: менее насыщенная рамка */
+.splash-input {
+  width: 100%;
+  height: 44px;
+  margin: 1.2em 0 0.5em 0;
+  padding: 0 1em;
+  font-size: 1.1em;
+  border-radius: 7px;
+  border: 2px solid #ff444466;
+  background: #23232a;
+  color: #fff;
+  outline: none;
+  font-family: 'Montserrat', Arial, sans-serif;
+  transition: border 0.18s, box-shadow 0.18s;
+  box-shadow: 0 0 0 0 #ff444433;
+}
+/* splash-input:focus: менее насыщенная подсветка */
+.splash-input:focus {
+  border-color: #ff7a7a99;
+  box-shadow: 0 0 0 2px #ff444466;
+}
+/* splash-btn: менее насыщенный градиент */
+.splash-btn {
+  margin-top: 1.5em;
+  padding: 0.9em 2.2em;
+  font-size: 1.1em;
+  font-family: 'Montserrat Black', 'Montserrat', Arial, sans-serif;
+  font-weight: 900;
+  background: linear-gradient(90deg, #ff4444cc 0%, #ff7a7a99 100%);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  box-shadow: 0 2px 16px #ff444433;
+  cursor: pointer;
+  transition: background 0.18s, opacity 0.22s cubic-bezier(.4,1.6,.6,1), transform 0.22s cubic-bezier(.4,1.6,.6,1);
+  width: 100%;
+  max-width: 320px;
+  opacity: 1;
+}
+/* splash-btn:disabled: менее насыщенный фон */
+.splash-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: #444;
+}
+
+@media (max-width: 600px) {
+  .splash-scene {
+    max-width: 99vw;
+    min-width: 0;
+    padding: 16px 4vw 12px 4vw;
+  }
+  .splash-title {
+    font-size: 18px;
+    margin-bottom: 1em;
+  }
+  .splash-subtitle {
+    font-size: 14px;
+    margin-bottom: 1.2em;
+  }
+  .splash-hint {
+    font-size: 12px;
+  }
+  .splash-btn {
+    font-size: 1em;
+    padding: 0.7em 1.2em;
+  }
+  .splash-input {
+    font-size: 1em;
+    height: 38px;
+  }
+  .splash-steps {
+    margin-bottom: 18px;
+  }
+}
 /* Импорт шрифта Montserrat */
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;900&display=swap');
 
@@ -30,12 +216,14 @@ body {
 
 .background-image {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-size: cover;
-  background-position: center;
+  top: 50%;
+  left: 50%;
+  width: 70vw;
+  height: 70vh;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center center;
+  transform: translate(-50%, -50%);
   z-index: 0;
   opacity: 0.65;
   pointer-events: none;
@@ -1175,4 +1363,111 @@ body.modal-open .cat-mascot {
   letter-spacing: 0.5px;
   font-variant: none;
   user-select: none;
+}
+
+/* --- АНИМАЦИЯ СЕРДЦА (FAVORITE) --- */
+.favorite-btn.heart-anim svg {
+  animation: heart-bounce 0.38s cubic-bezier(.4,1.6,.6,1);
+}
+.favorite-btn.filled svg .heart-fill {
+  transition: fill 0.5s cubic-bezier(.4,1.6,.6,1);
+  fill: #ff2222;
+}
+.favorite-btn svg .heart-fill {
+  transition: fill 0.5s cubic-bezier(.4,1.6,.6,1);
+  fill: none;
+}
+@keyframes heart-bounce {
+  0%   { transform: scale(1); }
+  30%  { transform: scale(1.22); }
+  60%  { transform: scale(0.92); }
+  100% { transform: scale(1); }
+}
+
+/* --- КОТ-МАСКОТ: МАЯТНИК --- */
+.cat-mascot {
+  transition: transform 0.7s cubic-bezier(.4,1.6,.6,1);
+  will-change: transform;
+  pointer-events: auto;
+}
+.cat-mascot.cat-left {
+  transform: translateX(-50%) translateX(-22px);
+}
+.cat-mascot.cat-right {
+  transform: translateX(-50%) translateX(22px);
+}
+.cat-mascot.cat-center {
+  transform: translateX(-50%) translateX(0);
+}
+.cat-mascot.cat-left,
+.cat-mascot.cat-right,
+.cat-mascot.cat-center {
+  transition: transform 0.7s cubic-bezier(.4,1.6,.6,1);
+}
+
+/* --- REVEAL-АНИМАЦИЯ ДЛЯ .main-layout --- */
+.main-layout {
+  opacity: 0;
+  transform: translateY(60px) scale(0.98);
+  transition: opacity 0.7s cubic-bezier(.4,1.6,.6,1),
+              transform 0.7s cubic-bezier(.4,1.6,.6,1);
+}
+.main-layout.scroll-reveal {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+/* --- КАСТОМНЫЙ ТОСТ-ПАСХАЛКА --- */
+.toast-easter {
+  position: fixed;
+  top: 32px;
+  right: 32px;
+  z-index: 2001;
+  min-width: 260px;
+  max-width: 340px;
+  background: #fff;
+  color: #222;
+  font-family: 'Montserrat', Arial, sans-serif;
+  font-size: 15px;
+  border-radius: 14px;
+  box-shadow: 0 4px 32px 0 rgba(255,34,34,0.18), 0 2px 24px 0 rgba(0,0,0,0.18);
+  padding: 22px 28px 22px 18px;
+  display: block;
+  cursor: pointer;
+  opacity: 0.98;
+  animation: toast-easter-fade-in 0.45s cubic-bezier(.4,1.6,.6,1);
+  line-height: 1.6;
+  border: 2px solid #ff2222;
+}
+@keyframes toast-easter-fade-in {
+  0% { opacity: 0; transform: translateY(-30px) scale(0.95); }
+  60% { opacity: 1; transform: translateY(6px) scale(1.04); }
+  100% { opacity: 0.98; transform: translateY(0) scale(1); }
+}
+.toast-easter span {
+  display: inline;
+  font-size: 15px;
+  line-height: 1.6;
+}
+.toast-easter span[style*='Black'] {
+  font-family: 'Montserrat', Arial, sans-serif;
+  font-weight: 900;
+  color: #ff2222;
+  letter-spacing: 0.5px;
+}
+.toast-easter span[style*='Light'] {
+  font-family: 'Montserrat', Arial, sans-serif;
+  font-weight: 300;
+  color: #222;
+}
+@media (max-width: 600px) {
+  .toast-easter {
+    top: 16px;
+    right: 8px;
+    left: 8px;
+    min-width: unset;
+    max-width: 98vw;
+    font-size: 14px;
+    padding: 14px 12px 14px 12px;
+  }
 }

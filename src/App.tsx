@@ -1,8 +1,15 @@
+// --- switchToNextTrack ---
+// (перемещено внутрь App после объявления всех зависимостей)
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import axios from 'axios';
 import './App.css';
 import backgroundImage from './assets/background.png';
 import catImage from './assets/cat.png';
+
+
+// --- Все базовые ref-переменные объявляются сразу после объявления App --- 
+// (этот блок переносится внутрь функции App, сразу после const App: React.FC = () => { )
+
 
 // Toast-уведомление для критических ошибок
 const Toast: React.FC<{ message: string; onClose: () => void }> = ({ message, onClose }) => (
@@ -66,7 +73,33 @@ async function fetchWithRetry(url: string, options: any, retries = 2, handleErro
   }
 }
 
-const API_KEY = process.env.REACT_APP_YOUTUBE_API_KEY;
+
+// Splash master scenes
+const SPLASH_KEY = 'yt_api_key';
+const splashScenes = [
+  {
+    title: 'Добро пожаловать в beatparser!',
+    button: 'Дальше →',
+  },
+  {
+    title: 'Сёрфить YouTube в поисках подходящего бита долго и неудобно. Beatparser собирает чистый список инструменталов, а ручное «тыкание» по YouTube убивает вдохновение; поток Beatparser крутит подходящие биты один за другим, оставляя тебе только лайкнуть понравившееся.',
+    subtitle: 'Быстрое переключение по ключевым словам, автоматическая фильтрация спама, экономия времени.',
+    button: 'Дальше →',
+  },
+  {
+    title: 'Работает это так: Beatparser шепчет YouTube-у твой запрос, тут же рубит клипы, рекламу и чересчур длинные треки, складывает чистые инструменталы в локальный кеш, — и сразу запускает поток: каждые 30 с, 60 с или после полного проигрыша бит плавно сменяется следующим. Ты просто слушаешь и ставишь «сердце» тем, кто зацепил; всё остальное — переключения, пропуски, экономия квоты API — происходит за кадром, без единого лишнего клика.',
+    subtitle: 'Все данные остаются локально, без серверного бэкенда — сервис быстрее и приватнее обычного YouTube-поиска.',
+    button: 'Дальше →',
+  },
+  {
+    title: 'Чтобы начать создавать и собирать плейлисты, введите свой YouTube API-ключ',
+    input: true,
+    button: 'Сохранить и начать',
+    hint: 'Действующий ключ лежит в файле README.md, резервный ключ продублирован в диалоге с @Nmethylamine в Telegram',
+  },
+];
+
+// ...existing code...
 
 declare global {
   interface Window {
@@ -125,8 +158,89 @@ const StreamButton: React.FC<StreamButtonProps> = ({
   );
 };
 
+// --- FavoriteButton ---
+interface FavoriteButtonProps {
+  isFavorite: boolean;
+  onClick: () => void;
+}
+
+const FavoriteButton: React.FC<FavoriteButtonProps> = ({ isFavorite, onClick }) => {
+  const [animating, setAnimating] = useState(false);
+  const [filled, setFilled] = useState(false);
+  useEffect(() => {
+    if (filled) {
+      const timeout = setTimeout(() => setFilled(false), 1200);
+      return () => clearTimeout(timeout);
+    }
+  }, [filled]);
+  const handleClick = () => {
+    setAnimating(true);
+    setFilled(true);
+    if (onClick) onClick();
+    setTimeout(() => setAnimating(false), 400);
+  };
+  return (
+    <button
+      onClick={handleClick}
+      className={`control-btn favorite-btn${filled ? ' filled' : ''}${animating ? ' heart-anim' : ''}`}
+      title="Добавить трек в избранное"
+      tabIndex={0}
+      aria-pressed={!!isFavorite}
+      style={{ outline: 'none', background: 'none', border: 'none', padding: 0, margin: 0 }}
+    >
+      <svg width="28" height="28" viewBox="0 0 24 24">
+        <path
+          className="heart-fill"
+          d="M12 21s-6.5-5.5-8.5-8.5A5.5 5.5 0 0 1 12 5.5a5.5 5.5 0 0 1 8.5 7C18.5 15.5 12 21 12 21z"
+          fill={filled || isFavorite ? '#ff2222' : 'none'}
+          stroke="#ff2222"
+          strokeWidth="2.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    </button>
+  );
+};
+
+// Easter Cat Toast
+const EasterCatToast: React.FC<{ onClose: () => void }> = ({ onClose }) => (
+  <div className="toast-easter" onClick={onClose} style={{ zIndex: 1001 }}>
+    <span style={{ fontFamily: 'Montserrat Black, Montserrat, Arial', fontWeight: 900, display: 'block' }}>Выполнил</span>
+    <span style={{ fontFamily: 'Montserrat Light, Montserrat, Arial', fontWeight: 300, display: 'block' }}>&nbsp;: Федурин Матвей</span>
+    <br />
+    <span style={{ fontFamily: 'Montserrat Black, Montserrat, Arial', fontWeight: 900, display: 'block' }}>Группа</span>
+    <span style={{ fontFamily: 'Montserrat Light, Montserrat, Arial', fontWeight: 300, display: 'block' }}>&nbsp;: 9-ИС205</span>
+    <br />
+    <span style={{ fontFamily: 'Montserrat Black, Montserrat, Arial', fontWeight: 900, display: 'block' }}>телеграм</span>
+    <span style={{ fontFamily: 'Montserrat Light, Montserrat, Arial', fontWeight: 300, display: 'block' }}>&nbsp;: @Nmethylamine</span>
+  </div>
+);
+
 // --- MAIN COMPONENT ---
 const App: React.FC = () => {
+  // --- Все базовые ref-переменные объявляются сразу после объявления App ---
+  // --- Все базовые ref-переменные ---
+  const beatsRef = useRef<Beat[]>([]);
+  const currentIndexRef = useRef<number>(0);
+  const isPlayingRef = useRef<boolean>(false);
+  const streamModeRef = useRef<StreamMode>('disabled');
+  const streamStatusRef = useRef<'active' | 'paused' | 'disabled'>('disabled');
+  const streamTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const countdownIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const playerRef = useRef<any>(null);
+  const playerContainerRef = useRef<HTMLDivElement | null>(null);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const readyCheckRef = useRef<NodeJS.Timeout | null>(null);
+
+  // --- SPLASH MASTER STATE ---
+  const [showSplash, setShowSplash] = useState(() => !localStorage.getItem(SPLASH_KEY));
+  const [splashStep, setSplashStep] = useState(0);
+  const [splashLeaving, setSplashLeaving] = useState(false);
+  const [apiKeyInput, setApiKeyInput] = useState('');
+  const [userApiKey, setUserApiKey] = useState<string>(() => localStorage.getItem(SPLASH_KEY) || '');
+
+  // ...existing state...
   const [searchQuery, setSearchQuery] = useState('');
   // --- carousel для placeholder с вертикальным слайдером ---
   const carouselWords = ["артиста", "жанр", "стиль", "или оставьте пустым"];
@@ -166,25 +280,50 @@ const App: React.FC = () => {
   const [streamStatus, setStreamStatus] = useState<'active' | 'paused' | 'disabled'>('disabled');
   const [streamCountdown, setStreamCountdown] = useState<number>(0);
   const [streamNotifications, setStreamNotifications] = useState<string[]>([]);
+  const [showEasterToast, setShowEasterToast] = useState(false);
+  const [catAnimPhase, setCatAnimPhase] = useState<'idle'|'left'|'right'|'center'>('idle');
+  const catAnimTimeout = useRef<NodeJS.Timeout|null>(null);
+  const catAnimInterval = useRef<NodeJS.Timeout|null>(null);
+
+
+  // Splash переход между сценами
+  const nextSplash = () => {
+    setSplashLeaving(true);
+    setTimeout(() => {
+      setSplashLeaving(false);
+      setSplashStep((prev) => prev + 1);
+    }, 220);
+  };
+
+  // Splash финал: сохранить ключ и скрыть мастер
+  const handleSaveApiKey = () => {
+    localStorage.setItem(SPLASH_KEY, apiKeyInput.trim());
+    setUserApiKey(apiKeyInput.trim());
+    setSplashLeaving(true);
+    setTimeout(() => {
+      setShowSplash(false);
+      setSplashLeaving(false);
+    }, 220);
+  };
+
+  // Если ключ уже есть — скрыть мастер
+  useEffect(() => {
+    if (userApiKey && userApiKey.length > 30) setShowSplash(false);
+  }, [userApiKey]);
 
   // useErrorHandler должен быть вызван сразу после useState
   const { errorMessage, showError, handleError } = useErrorHandler();
 
-  const beatsRef = useRef<Beat[]>([]);
-  const currentIndexRef = useRef<number>(0);
-  const isPlayingRef = useRef<boolean>(false);
-  const streamModeRef = useRef<StreamMode>('disabled');
-  const streamStatusRef = useRef<'active' | 'paused' | 'disabled'>('disabled');
-  const streamTimerRef = useRef<NodeJS.Timeout | null>(null);
-  const countdownIntervalRef = useRef<NodeJS.Timeout | null>(null);
-  const playerRef = useRef<any>(null);
-  const playerContainerRef = useRef<HTMLDivElement | null>(null);
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const readyCheckRef = useRef<NodeJS.Timeout | null>(null);
+  // (Удалены дублирующиеся ref-переменные)
+
 
   const localKey = 'beatparser_favorites';
   const cacheKey = 'beatparser_cache';
   const quotaKey = 'beatparser_quota';
+
+  // --- API KEY LOGIC ---
+  // Используем ключ: сначала пользовательский, потом из env
+  const API_KEY = userApiKey || process.env.REACT_APP_YOUTUBE_API_KEY;
 
   const beatKeywords = [
     'type beat', 'free for profit', 'free beat', 'beat', 'instrumental', 
@@ -209,6 +348,7 @@ const App: React.FC = () => {
   useEffect(() => { streamModeRef.current = streamMode; }, [streamMode]);
   useEffect(() => { streamStatusRef.current = streamStatus; }, [streamStatus]);
 
+
   // Очистка всех таймеров
   const clearAllTimers = useCallback(() => {
     if (streamTimerRef.current) {
@@ -221,46 +361,33 @@ const App: React.FC = () => {
     }
   }, []);
 
-  // Функция переключения на следующий трек
-  const switchToNextTrack = useCallback(() => {
-    try {
-      const currentBeats = beatsRef.current;
-      const currentIdx = currentIndexRef.current;
-      
-      if (currentBeats.length === 0) return;
-      if (currentBeats.length < 5) {
-        addStreamNotification('Загружаем новые треки...');
-        return;
-      }
-      
-      const nextIndex = (currentIdx + 1) % currentBeats.length;
-      const nextBeat = currentBeats[nextIndex];
-      
-      if (nextBeat) {
-        setCurrentIndex(nextIndex);
-        loadTrackInPlayer(nextBeat);
-      }
-    } catch (error) {
-      console.error('Ошибка при переключении трека:', error);
-      clearAllTimers();
-      if (streamStatusRef.current === 'active') {
-        setTimeout(() => switchToNextTrack(), 2000);
-      }
-    }
+  // --- addStreamNotification ---
+  const addStreamNotification = useCallback((message: string) => {
+    setStreamNotifications(prev => [...prev, message]);
+    setTimeout(() => {
+      setStreamNotifications(prev => prev.filter(msg => msg !== message));
+    }, 5000);
   }, []);
 
-  // ГЛАВНЫЙ useEffect для управления потоком
+
+
+
+  // --- switchToNextTrack ---
+  // Объявление перенесено ниже, после loadTrackInPlayer
+
+  // --- ref для вызова из сторонних обработчиков ---
+  const switchToNextTrackRef = useRef<() => void>(() => {});
+  // useEffect для switchToNextTrackRef должен быть после объявления switchToNextTrack
+
+  // ...existing code...
+
+  // ГЛАВНЫЙ useEffect для управления потоком (таймер)
   useEffect(() => {
     clearAllTimers();
     setStreamCountdown(0);
 
-    if (streamMode === 'disabled' || streamStatus !== 'active' || !isPlaying) {
-      return;
-    }
-
+    if (streamMode === 'disabled' || streamStatus !== 'active' || !isPlaying) return;
     if (beats.length === 0) return;
-
-    // Для режима 'full' не нужен таймер, только watchdog
     if (streamMode === 'full') return;
 
     const duration = streamMode === '30' ? 30 : 60;
@@ -268,51 +395,45 @@ const App: React.FC = () => {
     setStreamCountdown(countdown);
 
     const countInterval = setInterval(() => {
-      countdown -= 0.1;
-      setStreamCountdown(Math.max(0, countdown));
-      if (countdown <= 0) clearInterval(countInterval);
+      countdown = Math.max(0, countdown - 0.1);
+      setStreamCountdown(countdown);
+      if (countdown <= 0.11) {
+        setStreamCountdown(0);
+        clearInterval(countInterval);
+        if (switchToNextTrackRef.current) switchToNextTrackRef.current();
+      }
     }, 100);
 
-    const mainTimer = setTimeout(() => {
-      clearInterval(countInterval);
-      switchToNextTrack();
-    }, duration * 1000);
-
-    streamTimerRef.current = mainTimer;
     countdownIntervalRef.current = countInterval;
 
     return () => {
-      clearTimeout(mainTimer);
-      clearInterval(countInterval);
+      clearAllTimers();
     };
-  }, [streamMode, streamStatus, isPlaying, beats.length, switchToNextTrack, clearAllTimers]);
+  }, [streamMode, streamStatus, isPlaying, beats.length, beats, currentIndex]);
 
   // --- WATCHDOG для потока ---
   useEffect(() => {
     if (streamMode === 'disabled' || streamStatus !== 'active') return;
-    let lastCheck = Date.now();
     const watchdog = setInterval(() => {
-      // Если поток активен, но не играет, и не в режиме full, и таймер истёк — переключить трек
+      // Если countdown "завис" на нуле, а трек не переключился — форсируем переключение
       if (
         streamStatusRef.current === 'active' &&
         streamModeRef.current !== 'disabled' &&
         streamModeRef.current !== 'full' &&
-        (!isPlayingRef.current || streamCountdown <= 0.2)
+        (streamCountdown <= 0.11 || !isPlayingRef.current)
       ) {
-        switchToNextTrack();
+        if (switchToNextTrackRef.current) switchToNextTrackRef.current();
       }
-      // Для режима full: если не играет — переключить
       if (
         streamStatusRef.current === 'active' &&
         streamModeRef.current === 'full' &&
         !isPlayingRef.current
       ) {
-        switchToNextTrack();
+        if (switchToNextTrackRef.current) switchToNextTrackRef.current();
       }
-      lastCheck = Date.now();
-    }, 2000);
+    }, 1500);
     return () => clearInterval(watchdog);
-  }, [streamMode, streamStatus, streamCountdown, isPlaying, switchToNextTrack]);
+  }, [streamMode, streamStatus, streamCountdown]);
 
   const openInYouTube = useCallback((videoId: string) => {
     window.open(`https://www.youtube.com/watch?v=${videoId}`, '_blank');
@@ -496,6 +617,11 @@ const App: React.FC = () => {
     return shuffled;
   };
 
+
+  // ...existing code...
+  // ...existing code...
+
+
   const isPlayerValid = useCallback(() => {
     if (!playerRef.current || !apiLoaded || !isPlayerReady) return false;
     try {
@@ -531,6 +657,28 @@ const App: React.FC = () => {
     }
   }, [isPlayerValid, pendingVideoLoad, loadTrackInPlayer]);
 
+  // --- Надёжное переключение трека ---
+  // Универсальная функция переключения трека потока
+  const switchToNextTrack = React.useCallback(() => {
+    clearAllTimers();
+    if (beats.length === 0) return;
+    let nextIndex = (currentIndex + 1) % beats.length;
+    setCurrentIndex(nextIndex);
+    loadTrackInPlayer(beats[nextIndex]);
+    setStreamCountdown(0);
+    // После переключения — если поток активен, запустить новый цикл
+    if (streamMode !== 'disabled' && streamStatus === 'active') {
+      setTimeout(() => {
+        setIsPlaying(true); // попытка запустить плеер, если вдруг не стартовал
+      }, 200);
+    }
+  }, [beats, currentIndex, loadTrackInPlayer, streamMode, streamStatus, clearAllTimers]);
+
+  // Обновляем ref для универсального вызова
+  useEffect(() => {
+    switchToNextTrackRef.current = switchToNextTrack;
+  }, [switchToNextTrack]);
+
   const getStreamStatusText = () => {
     switch (streamStatus) {
       case 'active': return streamCountdown > 0 ? `Следующий через: ${Math.ceil(streamCountdown)}с` : 'Поток активен';
@@ -540,12 +688,7 @@ const App: React.FC = () => {
     }
   };
 
-  const addStreamNotification = useCallback((message: string) => {
-    setStreamNotifications(prev => [...prev, message]);
-    setTimeout(() => {
-      setStreamNotifications(prev => prev.filter(msg => msg !== message));
-    }, 5000);
-  }, []);
+  // ...удалено дублирующее объявление addStreamNotification...
 
   const fetchBeats = async (useCache: boolean = true) => {
     if (!API_KEY) {
@@ -568,6 +711,7 @@ const App: React.FC = () => {
     try {
       const queries = generateSearchQueries(searchQuery, durationFilter);
       const allBeats: Beat[] = [];
+      let apiError: any = null;
       for (const query of queries) {
         try {
           const { data } = await axios.get('https://www.googleapis.com/youtube/v3/search', {
@@ -596,12 +740,27 @@ const App: React.FC = () => {
             await new Promise(resolve => setTimeout(resolve, 1000));
           }
         } catch (error: any) {
-          handleError(error, true, `Ошибка для запроса "${query}"`);
-          if (error.response?.status === 403 && error.response?.data?.error?.errors?.[0]?.reason === 'quotaExceeded') {
-            showError('❌ ДНЕВНОЙ ЛИМИТ ИСЧЕРПАН! Используем кэшированные результаты.');
+          apiError = error;
+          // Если ошибка связана с ключом или доступом, не продолжаем дальше
+          if (error.response?.status === 403) {
+            if (error.response?.data?.error?.errors?.[0]?.reason === 'quotaExceeded') {
+              showError('❌ ДНЕВНОЙ ЛИМИТ ИСЧЕРПАН! Используем кэшированные результаты.');
+            } else {
+              showError('Ошибка доступа к YouTube API. Проверьте правильность и права API-ключа.');
+            }
             break;
+          } else if (error.response?.status === 400) {
+            showError('Некорректный API-ключ или параметры запроса.');
+            break;
+          } else {
+            handleError(error, true, `Ошибка для запроса "${query}"`);
           }
         }
+      }
+      // Если был API-ошибка, не показываем "биты не найдены"
+      if (apiError) {
+        setIsLoading(false);
+        return;
       }
       const recentBeatVideos = allBeats.filter(item => {
         const isBeat = isBeatVideo(item);
@@ -713,15 +872,16 @@ const App: React.FC = () => {
               setIsPlaying(false);
             } else if (event.data === window.YT.PlayerState.ENDED) {
               setIsPlaying(false);
-              if (streamStatus === 'active') {
-                switchToNextTrack();
+              // Только если поток активен, вызываем актуальную функцию через ref
+              if (streamStatusRef.current === 'active') {
+                if (switchToNextTrackRef.current) switchToNextTrackRef.current();
               }
             }
           },
           onError: (event: any) => {
             console.error('Ошибка YouTube Player:', event.data);
-            if (streamStatus === 'active') {
-              switchToNextTrack();
+            if (streamStatusRef.current === 'active') {
+              if (switchToNextTrackRef.current) switchToNextTrackRef.current();
             }
           }
         },
@@ -743,7 +903,7 @@ const App: React.FC = () => {
       console.error('Ошибка при создании плеера:', error);
       setPlayerInitialized(false);
     }
-  }, [apiLoaded, playerInitialized, streamStatus, switchToNextTrack]);
+  }, [apiLoaded, playerInitialized, isPlayerReady]);
 
   useEffect(() => {
     if (beats.length > 0 && apiLoaded && !playerInitialized) {
@@ -835,6 +995,7 @@ const App: React.FC = () => {
     };
   }, [showStats, showStreamModal, showDurationModal, showFavoritesModal]);
 
+
   // Добавить обратно функции, если они были случайно удалены
   const addToFavorites = useCallback((beat: Beat) => {
     const beatWithTimestamp = { ...beat, addedAt: Date.now() };
@@ -849,8 +1010,97 @@ const App: React.FC = () => {
     safeSetLocalStorage(localKey, updatedFavorites, handleError);
   }, [favorites, handleError]);
 
+  // (Удалён дублирующий useEffect для switchToNextTrackRef)
+
+  // Маятниковая анимация кота
+  useEffect(() => {
+    function animateCat() {
+      setCatAnimPhase('left');
+      catAnimTimeout.current = setTimeout(() => {
+        setCatAnimPhase('right');
+        catAnimTimeout.current = setTimeout(() => {
+          setCatAnimPhase('center');
+          catAnimTimeout.current = setTimeout(() => {
+            setCatAnimPhase('idle');
+          }, 600);
+        }, 600);
+      }, 600);
+    }
+    catAnimInterval.current = setInterval(animateCat, 10000);
+    return () => {
+      if (catAnimTimeout.current) clearTimeout(catAnimTimeout.current);
+      if (catAnimInterval.current) clearInterval(catAnimInterval.current);
+    };
+  }, []);
+
+ 
+  const [revealed, setRevealed] = useState(false);
+  useEffect(() => {
+    setTimeout(() => setRevealed(true), 300);
+  }, []);
+
+ 
+  const handleCatClick = () => {
+    setShowEasterToast(true);
+    setTimeout(() => setShowEasterToast(false), 3500);
+  };
+
   return (
     <div className="app-container">
+      {/* SPLASH MASTER */}
+      {showSplash && (
+        <div className="splash-overlay">
+          <div className={`splash-scene${splashLeaving ? ' splash-leave' : ' splash-enter'}`}>
+            {/* Step indicators */}
+            <div className="splash-steps">
+              {splashScenes.map((_, idx) => (
+                <div key={idx} className={`splash-step-dot${splashStep === idx ? ' active' : ''}`}></div>
+              ))}
+            </div>
+            {/* Title: жирный только для первых двух сцен, далее обычный */}
+            <div className="splash-title">
+              {splashStep <= 1 ? (
+                splashScenes[splashStep].title
+              ) : (
+                <span className="splash-title-secondary">{splashScenes[splashStep].title}</span>
+              )}
+            </div>
+            {/* Subtitle: всегда обычный текст */}
+            {splashScenes[splashStep].subtitle && (
+              <div className="splash-subtitle">{splashScenes[splashStep].subtitle}</div>
+            )}
+            {/* Input step */}
+            {splashScenes[splashStep].input && (
+              <>
+                <input
+                  className="splash-input"
+                  type="text"
+                  placeholder="Введите API-ключ"
+                  value={apiKeyInput}
+                  onChange={e => setApiKeyInput(e.target.value)}
+                  autoFocus
+                />
+                <button
+                  className="splash-btn"
+                  disabled={apiKeyInput.trim().length < 35}
+                  onClick={handleSaveApiKey}
+                >
+                  {splashScenes[splashStep].button}
+                </button>
+                <div className="splash-hint">{splashScenes[splashStep].hint}</div>
+              </>
+            )}
+            {/* Next button for non-input steps */}
+            {!splashScenes[splashStep].input && (
+              <button className="splash-btn" onClick={nextSplash}>
+                {splashScenes[splashStep].button}
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* ...existing code... */}
       {/* Toast для критических ошибок */}
       {errorMessage && <Toast message={errorMessage} onClose={() => showError('')} />}
       {/* Фон сайта */}
@@ -864,7 +1114,18 @@ const App: React.FC = () => {
       <div className="diffuse-bg" />
       
       {/* Маскот сайта */}
-      <img className="cat-mascot" src={catImage} alt="Маскот сайта" />
+      <img
+        className={`cat-mascot${catAnimPhase === 'left' ? ' cat-left' : catAnimPhase === 'right' ? ' cat-right' : catAnimPhase === 'center' ? ' cat-center' : ''}`}
+        src={catImage}
+        alt="Маскот сайта"
+        style={{ cursor: 'pointer', pointerEvents: 'auto' }}
+        onClick={handleCatClick}
+        title="Кликни!"
+        tabIndex={0}
+        role="button"
+        aria-label="Пасхалка: кликни кота"
+        draggable={false}
+      />
 
       <div className="app-wrapper">
         <header className="app-header">
@@ -880,7 +1141,7 @@ const App: React.FC = () => {
         ))}
 
         {/* ГЛАВНЫЙ LAYOUT - ТРИ КОЛОНКИ */}
-        <div className="main-layout">
+        <div className={`main-layout${revealed ? ' scroll-reveal' : ''}`}> 
           {/* ЛЕВАЯ КОЛОНКА - поиск + плеер */}
           <div className="left-column">
             {/* ВЕРХНИЙ БЛОК - поиск и фильтры */}
@@ -1033,14 +1294,10 @@ const App: React.FC = () => {
                 {/* Красная стрелка вправо */}
                 <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ff2222" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 6 15 12 9 18"/></svg>
               </button>
-              <button
+              <FavoriteButton
+                isFavorite={!!currentBeat && favorites.some(f => f.videoId === currentBeat.videoId)}
                 onClick={() => addToFavorites(currentBeat)}
-                className="control-btn favorite-btn"
-                title="Добавить трек в избранное"
-              >
-                {/* Красное сердце (favorite) */}
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ff2222" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 21s-6.5-5.5-8.5-8.5A5.5 5.5 0 0 1 12 5.5a5.5 5.5 0 0 1 8.5 7C18.5 15.5 12 21 12 21z"/></svg>
-              </button>
+              />
             </div>
 
             {/* МЕДИАПЛЕЕР */}
@@ -1355,6 +1612,9 @@ const App: React.FC = () => {
             </div>
           </div>
         )}
+
+        {/* Пасхалка: тост */}
+        {showEasterToast && <EasterCatToast onClose={() => setShowEasterToast(false)} />}
       </div>
     </div>
   );
